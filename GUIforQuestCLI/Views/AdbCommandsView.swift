@@ -21,6 +21,11 @@ struct AdbCommandsView: View {
     
     @State var revealTouchDropdown : Bool = true
     @State private var isDropdownHighlighted : Bool = false
+    
+    init(revealTouchpadDropdown: Bool)
+    {
+        self.revealTouchDropdown = revealTouchpadDropdown
+    }
 
     func LaunchAPK()
     {
@@ -28,20 +33,19 @@ struct AdbCommandsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
        
-        panel.allowedContentTypes = [apkType!]     //UTType. UTType.epub]
-        //"com.android.package-archive"
+        panel.allowedContentTypes = [apkType!]
         if panel.runModal() == .OK {
             self.apkFilename = panel.url!.path()
         }
         
-        let args = ["install", "-r", self.apkFilename]
-        
         let task = Process()
+        let connection = Pipe()
+        
         task.executableURL = adbURL
+        task.standardOutput = connection
+        let args = ["install", "-r", self.apkFilename]
         task.arguments = args
 
-        let connection = Pipe()
-        task.standardOutput = connection
         self.isRunning = true
         task.terminationHandler = { _ in self.isRunning = false}
         try! task.run()
@@ -49,9 +53,17 @@ struct AdbCommandsView: View {
     
     func TapEvent()
     {
-        try! Process.run(adbURL,
-                         arguments: ["shell", "input", "tap", String(touchX), String(touchY)],
-                             terminationHandler: nil)
+        let task = Process()
+        let connection = Pipe()
+        
+        task.executableURL = adbURL
+        task.standardOutput = connection
+        
+        let args = ["shell", "input", "tap", String(touchX), String(touchY)]
+        task.arguments = args
+        self.isRunning = true
+        task.terminationHandler = { _ in self.isRunning = false}
+        try! task.run()
     }
     
     var body: some View {
@@ -119,7 +131,7 @@ struct AdbCommandsView: View {
 
 struct AdbCommandsView_Previews: PreviewProvider {
     static var previews: some View {
-        AdbCommandsView()
+        AdbCommandsView(revealTouchpadDropdown: true)
     }
 }
 

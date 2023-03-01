@@ -21,7 +21,7 @@ struct ContentView: View {
             } label: {
                 Text("Setup")
             }
-            AdbCommandsView(revealTouchDropdown: false)
+            AdbCommandsView(revealTouchpadDropdown: false)
             ScrcpyConfigView(revealDropdown: false)
             Spacer()
         }
