@@ -53,6 +53,7 @@ struct ScrcpyConfigView: View {
             Button {
                 LaunchScreenCopy()
             } label: {
+                Image(systemName: "play.display")
                 Text("Start Scrcpy")
             }
 

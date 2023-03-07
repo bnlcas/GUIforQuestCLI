@@ -19,7 +19,7 @@ struct AdbCommandsView: View {
     @State var apkFilename = "tmp.apk"
     let apkType = UTType("com.app.apk")
     
-    @State var revealTouchDropdown : Bool = true
+    @State var revealTouchDropdown : Bool = false
     @State private var isDropdownHighlighted : Bool = false
     
     init(revealTouchpadDropdown: Bool)
@@ -66,6 +66,21 @@ struct AdbCommandsView: View {
         try! task.run()
     }
     
+    func EnterHomeKey()
+    {
+        let task = Process()
+        let connection = Pipe()
+        
+        task.executableURL = adbURL
+        task.standardOutput = connection
+        
+        let args = ["shell", "input", "keyevent", "KEYCODE_HOME"]
+        task.arguments = args
+        self.isRunning = true
+        task.terminationHandler = { _ in self.isRunning = false}
+        try! task.run()
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 5){
             Divider()
@@ -79,10 +94,22 @@ struct AdbCommandsView: View {
                     LaunchAPK()
                 }
             } label: {
+                    Image(systemName: "airplane.departure")
                     Text("Launch APK")
                 }
                 if(self.isRunning){
                     ProgressView()
+                }
+            }
+            
+            Button{
+                if(!self.isRunning){
+                    EnterHomeKey()
+                }
+            } label: {
+                HStack{
+                    Image(systemName: "house")
+                    Text("Return Home")
                 }
             }
             
@@ -94,6 +121,7 @@ struct AdbCommandsView: View {
                             TapEvent()
                         }
                     } label: {
+                        Image(systemName: "hand.point.down")
                         Text("Tap Event")
                     }
                     HStack(alignment: .center)
@@ -112,11 +140,11 @@ struct AdbCommandsView: View {
             }, label: {
                 HStack(alignment: .center, spacing: 5){
                     Spacer().frame(width: 5, height: 5)
-                    Image(systemName: "hand.point.up")
+                    Image(systemName: revealTouchDropdown ? "hand.point.down" : "hand.point.up")
                         .frame(width: 32.0, height: 32.0)
                         .foregroundColor(isDropdownHighlighted ? .blue : .none)
                         .scaledToFit()
-
+    
                     Text("Touch Input")
                         .foregroundColor(isDropdownHighlighted ? .blue : .none)
                     Spacer()
