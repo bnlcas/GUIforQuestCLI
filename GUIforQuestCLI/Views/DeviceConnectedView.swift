@@ -10,9 +10,14 @@ import SwiftUI
 struct DeviceConnectedView: View {
     let adbURL = URL(fileURLWithPath: "/opt/homebrew/bin/adb")
 
-    var isConnected : Bool = false;
+    @State var isConnected : Bool = false;
     
     @State var isRunning : Bool = false;
+    
+    init()
+    {
+        self.CheckConnection()
+    }
     
     func CheckConnection()
     {
@@ -23,13 +28,14 @@ struct DeviceConnectedView: View {
         let connection = Pipe()
         task.standardOutput = connection
         self.isRunning = true
-        task.terminationHandler = { tmp in self.isRunning = false
+        task.terminationHandler = { _ in
+            self.isRunning = false
             
-            print(tmp.terminationStatus)
-            //print(tmp.standardError!)
+            let outputData = connection.fileHandleForReading.readDataToEndOfFile()
+            let output = String(decoding: outputData, as: UTF8.self)
+            self.isConnected = ((output.count) > 26)
         }
         try! task.run()
-        //print(task.standardOutput.)
     }
     
     var body: some View {
