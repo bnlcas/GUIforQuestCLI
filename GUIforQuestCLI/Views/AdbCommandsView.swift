@@ -95,7 +95,9 @@ struct AdbCommandsView: View {
                 }
             } label: {
                     Image(systemName: "airplane.departure")
+                    .foregroundColor(self.isRunning ? .gray : .white)
                     Text("Launch APK")
+                    .foregroundColor(self.isRunning ? .gray : .white)
                 }
                 if(self.isRunning){
                     ProgressView()

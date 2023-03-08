@@ -57,7 +57,9 @@ struct DeviceConnectedView: View {
                 CheckConnection()
             } label: {
                 Image(systemName: self.isConnected ? "bolt.fill" : "bolt.slash.fill")
+                    .foregroundColor(self.isRunning ? .gray : .white)
                 Text("Check Connection")
+                    .foregroundColor(self.isRunning ? .gray : .white)
 
             }
         }
