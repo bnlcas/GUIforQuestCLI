@@ -8,22 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    let speechURL = URL(fileURLWithPath: "/usr/bin/say")
+    @State var isEnvironmentConfigured = UserDefaults.standard.bool(forKey: "isConfigured") ?? false
     
     var body: some View {
         VStack {
             Text("Quest CLI → GUI")
-            Button {
-                
-                try! Process.run(speechURL,
-                                 arguments: ["Install Homebrew"],
-                                     terminationHandler: nil)
-            } label: {
-                Text("Setup")
+            if(isEnvironmentConfigured){
+                VStack {
+                    AdbCommandsView(revealTouchpadDropdown: false)
+                    ScrcpyConfigView(revealDropdown: false)
+                    Spacer()
+                }
+
             }
-            AdbCommandsView(revealTouchpadDropdown: false)
-            ScrcpyConfigView(revealDropdown: false)
-            Spacer()
+            else
+            {
+                InstallationView(isEnvironmentConfigured: $isEnvironmentConfigured)
+            }
         }
         .frame(maxWidth:300)
         .padding()
